@@ -1,0 +1,45 @@
+Planificacion:
+    objetivos:
+        tener stock de productos
+            agregar
+            editor
+            eliminar
+        contabilidad
+            tener lista de pedidos
+            ?editar
+            tener lista de los totales por producto
+        area de venta
+            mostrar todos los productos
+            mostrar el total de la venta actual
+            mostrar los productos que colocaste en esta
+            funciones
+                confirmar venta
+                cancelar venta
+                agregar producto a la venta
+                sacar productos
+        ajustes:
+            aca lo que va a ver va a ser una interface donde nos permitira resetear la app
+            esto si tenemos la contraseña...
+    datos:
+        productos:
+            id:number
+            nombre:string
+            precio:double
+        ventas:
+            id:number
+            productos:json-> string 256
+            total:double
+    despliege:
+        opt1:local
+            ?seguridad
+            mejor manejo , mas facil control
+        opt2:internet , bloqueado
+            ?seguridad
+            ?Estabilidad
+            ?data base
+    interfaces:
+        inicio
+            productos
+            venta
+            totales
+            ?Ajustes...

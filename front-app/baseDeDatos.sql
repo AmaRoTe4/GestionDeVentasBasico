@@ -1,0 +1,5 @@
+--esta eestara un server de node basico que hacemos
+--esta estara en una tabla llamada: GestionDeVentasBasico
+--tendra dos tablas:
+--  la primera: Productos: id , nombre:string , precio:double , vendidos:int , updatedAt , createdAt
+--  la segunda: Ventas: id , ventas:string long (json) , updatedAt , createdAt

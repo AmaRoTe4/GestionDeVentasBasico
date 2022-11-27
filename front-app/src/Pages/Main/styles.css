@@ -1,0 +1,43 @@
+.box-links-main{
+    height:80vh;
+    width:50vw;
+}
+
+.btn-Links-main{
+    width:100%;
+    height:15%;
+    background-color:yellowgreen;
+    border:solid 1px black;
+    border-radius:10px;
+    margin: 20px 0px;
+    text-decoration: none;
+}
+
+.btn-Links-main:hover{
+    color:black;
+    opacity: 0.75;
+}
+
+
+.btn-Links-main button{
+    text-align: center;
+    font-size:30px;
+}
+
+.btn-ajuste-main{
+    margin-top: 4vh;
+    margin-right: 4vw;
+    color:black;
+    text-decoration: none;
+}
+
+.btn-ajuste-main:hover{
+    color:grey;
+}
+
+@media (max-width: 767px){
+    .box-links-main{
+        height:60vh;
+        width:90vw
+    }
+}
