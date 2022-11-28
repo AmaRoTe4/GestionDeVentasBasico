@@ -1,36 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table } from 'react-bootstrap';
 import {useNavigate} from 'react-router-dom';
-import productos from './productos.json'
+import {todasVentas} from '../../functions/https/ventas'
+import { InterVentas , InterProductos  , ProductoVendido } from '../../../interface';
 import './styles.css'
-
-interface ProductoAVender{
-    nombre:string;
-    precio:number;
-    cantidad:number;
-}
-
-interface VentasTotales{
-    id:number,
-    precio:number;
-    cantidad:number;
-    productos:ProductoAVender[];
-}
+import { valoresAbsolutosPorVenta } from '../../functions/data';
 
 export default function TotalVentas(){
     const navigate = useNavigate()
-    const [ventasTotales , setVentasTotales] = useState<VentasTotales[]>(productos)
+    const [ventas , setVentas] = useState<InterVentas[]>([])
+    const [precioTotal , setPrecioTotal] = useState<number>(0)
+    const [cantidadTotal , setCantidadTotal] = useState<number>(0)
 
-    const cantidadTotal = ():number => {
-        let aux = 0;
-        ventasTotales.map(n => aux += n.cantidad)
-        return aux;
-    }  
-    const precioTotal = ():number => {
-        let aux = 0;
-        ventasTotales.map(n => aux += n.precio)
-        return aux;
-    } 
+    useEffect(() =>{
+        cargaVentas()
+    },[])
+
+    const cargaVentas = async () => {
+        const aux:InterVentas[] = await todasVentas();
+        const retorno = await valoresAbsolutosPorVenta(aux)
+
+        let precio = 0
+        let cantidad = 0
+        retorno.map(n => precio += n.precio ? n.precio : 0)
+        retorno.map(n => cantidad += n.cantidad ? n.cantidad : 0)
+
+        setVentas(retorno)
+        setPrecioTotal(precio)
+        setCantidadTotal(cantidad)
+    }
 
     return (
         <div className="containt100"> 
@@ -44,7 +42,8 @@ export default function TotalVentas(){
                         </tr>
                     </thead>
                     <tbody>
-                        {ventasTotales.map((n , i) =>  
+                        {ventas.length > 0 && 
+                        ventas.map((n , i) =>  
                             <tr 
                                 className="unidad-de-tabla-total-ventas" 
                                 key={i} 
@@ -59,8 +58,8 @@ export default function TotalVentas(){
             </div>
             <div className="barra-totales-ventas">
                 <div className='table-total-ventas'>Totales</div>
-                <div className='table-valor-ventas'>{cantidadTotal()}</div>
-                <div className='table-valor-ventas'>${precioTotal()}</div>
+                <div className='table-valor-ventas'>{cantidadTotal}</div>
+                <div className='table-valor-ventas'>${precioTotal}</div>
             </div>
         </div>
     )

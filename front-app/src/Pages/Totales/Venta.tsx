@@ -1,37 +1,45 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table } from 'react-bootstrap';
 import { useLocation, useNavigate , } from 'react-router-dom';
-import productos from './productos.json'
+import { ventaId } from '../../functions/https/ventas';
+import {InterProductos , InterVentas, ProductoVendido} from '../../../interface'
 import './styles.css'
+import { mostrarProductoId } from '../../functions/https/Productos';
 
-interface ProductoAVender{
-    nombre:string;
-    precio:number;
-    cantidad:number;
-}
-
-interface VentasTotales{
-    id:number,
-    precio:number;
-    cantidad:number;
-    productos:ProductoAVender[];
-}
 
 export default function TotalVentasIndividual(){
-    //const navigate = useNavigate()
+    const navigate = useNavigate()
     const id:number = parseInt(useLocation().pathname.split('/')[3])
-    const [ventasTotales] = useState<VentasTotales>(productos.filter(n => n.id === id)[0])
+    const [venta , setVenta] = useState<InterProductos[]>()
+    const [precioTotal , setPrecioTotal] = useState<number>(0)
+    const [cantidadTotal , setCantidadTotal] = useState<number>(0)
 
-    const cantidadTotal = ():number => {
-        let aux = 0;
-        ventasTotales.productos.map(n => aux += n.cantidad)
-        return aux;
-    }  
-    const precioTotal = ():number => {
-        let aux = 0;
-        ventasTotales.productos.map(n => aux += n.precio)
-        return aux;
-    } 
+    useEffect(() =>{
+        cargaVenta()
+    },[])
+
+    const cargaVenta = async () => {
+        const aux:InterVentas = await ventaId(id)
+        const productos:ProductoVendido[] = JSON.parse(aux.venta)
+        const retorno:InterProductos[] = []
+
+        let precio = 0
+        let cantidad = 0
+        
+        if(aux === undefined) return
+
+        for(let i = 0 ; i < productos.length; i++){
+            const Producto:InterProductos = await mostrarProductoId(productos[i].id) 
+            Producto.vendidos = productos[i].vendidos;
+            retorno.push(Producto)
+            precio += Producto.precio*productos[i].vendidos;
+            cantidad += productos[i].vendidos
+        }
+        
+        setVenta(retorno)
+        setPrecioTotal(precio)
+        setCantidadTotal(cantidad)     
+    }
 
     return (
         <div className="containt100"> 
@@ -47,14 +55,14 @@ export default function TotalVentasIndividual(){
                         </tr>
                     </thead>
                     <tbody>
-                        {ventasTotales.productos.map((n , i) =>  
+                        {venta !== undefined && venta.map((n , i) =>  
                             <tr 
                                 className="unidad-de-tabla-total-ventas" 
                                 key={i} 
                             >
                                 <td>{i}</td>
                                 <td>{n.nombre}</td>
-                                <td className='text-end'>{n.cantidad}</td>
+                                <td className='text-end'>{n.vendidos}</td>
                                 <td className='text-end'>${n.precio}</td>
                             </tr>
                         )}
@@ -62,9 +70,9 @@ export default function TotalVentasIndividual(){
                 </Table>
             </div>
             <div className="barra-totales-ventas">
-                <div className='table-total-ventas'>Totales</div>
-                <div className='table-valor-ventas'>{cantidadTotal()}</div>
-                <div className='table-valor-ventas'>${precioTotal()}</div>
+                <div className='table-total-ventas' style={{width:'60%'}}>Totales</div>
+                <div className='table-valor-ventas' style={{width:'20%'}}>{cantidadTotal}</div>
+                <div className='table-valor-ventas' style={{width:'20%'}}>${precioTotal}</div>
             </div>
         </div>
     )

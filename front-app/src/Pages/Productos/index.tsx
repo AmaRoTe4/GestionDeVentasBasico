@@ -2,23 +2,20 @@ import './styles.css'
 import {useState,useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { InterProductos } from '../../../interface'
-import {eliminarProducto } from '../../functions/https/index'
-import axios from 'axios'
+import {eliminarProducto , mostrarTodosLosProductos } from '../../functions/https/Productos/index'
 import Swal from 'sweetalert2'
-
-const pathProductos = 'http://localhost:7890/Productos/' 
 
 export default function Productos(){
     const [element, setElement] = useState<InterProductos[]>([])
     const navigate = useNavigate()
 
     useEffect(() => {
-        mostrarTodosLosProductos()
+        cargaDeElementos()
     },[element])
 
-    const mostrarTodosLosProductos = async() => {
-        const aux = await axios.get(pathProductos)
-        setElement(aux.data)
+    const cargaDeElementos = async() => {
+        const aux = await mostrarTodosLosProductos()
+        setElement(aux)
     }
 
     return (

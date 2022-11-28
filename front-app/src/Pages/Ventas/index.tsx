@@ -1,31 +1,30 @@
 import './styles.css'
 import { useEffect, useState } from 'react'
-import { Table } from 'react-bootstrap'
-import Swal from "sweetalert2"
-import axios from 'axios';
-import { InterProductos } from "../../../interface"
-
-const pathProductos = 'http://localhost:7890/Productos/' 
-interface ProductoAVender{
-    nombre:string;
-    precio:number;
-    cantidad:number;
-}
+import { InterProductos , InterVentas, ProductoVendido, } from "../../../interface"
+import TablaVentas from '../../components/ventas/tabla';
+import { mostrarTodosLosProductos , mostrarProductoNombre} from '../../functions/https/Productos/index'
+import { AgregarProducto } from '../../functions/data/Productos/index'
+import { realizarVenta } from '../../functions/https/ventas/index'
 
 export default function Ventas(){
-    const [eleSelc , setEleSelc] = useState<string>("")
+    const [eleSelc , setEleSelc] = useState<InterProductos>({
+        id:0,
+        nombre:'',
+        precio:0,
+        vendidos:0
+    })
     const [cantidad , setCantidad] = useState<number>(1)
     const [total , setTotal] = useState<number[]>([0,0])
-    const [prtsPorVender , setPrtsPorVender] = useState<ProductoAVender[]>([])
+    const [prtsPorVender , setPrtsPorVender] = useState<InterProductos[]>([])
     const [elementos , setElementos] = useState<InterProductos[]>([])
 
     useEffect(() => {
-        mostrarTodosLosProductos()
+        cargaDeElementos()
     },[])
 
-    const mostrarTodosLosProductos = async() => {
-        const aux = await axios.get(pathProductos)
-        setElementos(aux.data)
+    const cargaDeElementos = async () => {
+        const aux = await mostrarTodosLosProductos()
+        setElementos(aux)
     }
 
     const limpiar = () => {
@@ -34,50 +33,47 @@ export default function Ventas(){
     }
 
     const RealizarVenta = () => {
+        if(prtsPorVender.length <= 0) return
+
+        let aux:ProductoVendido[] = [];
+        
+        prtsPorVender.forEach((n) => {
+            aux.push({id: n.id, vendidos: n.vendidos})
+        })
+
+        realizarVenta([...aux])
         limpiar()
-    }
-
-    const AgregarProducto = () => {
-        if(cantidad === 0 || eleSelc === "") return
-        
-        let aux:ProductoAVender = prtsPorVender.filter(n => n.nombre === eleSelc)[0]
-        
-        if(aux !== undefined) aux.cantidad += cantidad
-        else{
-            aux = {
-                nombre: eleSelc,
-                precio: precio(eleSelc),
-                cantidad: cantidad,
-            } 
-        }
-
-        let retorno:ProductoAVender[] = prtsPorVender.filter(n => n.nombre !== eleSelc)
-
-        setPrtsPorVender([...retorno, aux])
-        setTotal(n => [n[0]+cantidad , n[1]+cantidad*precio(eleSelc)])
-        setCantidad(1)
     }
 
     const BorrarProducto = (id:number) => {
         let aux = prtsPorVender
-        let eliminar:ProductoAVender = prtsPorVender.splice(id , 1)[0]
+        let eliminar:InterProductos = prtsPorVender.splice(id , 1)[0]
         setPrtsPorVender(aux);
         setTotal(n => 
-            [n[0]-eliminar.cantidad,
-            n[1]-eliminar.cantidad*eliminar.precio]
+            [n[0]-eliminar.vendidos,
+            n[1]-eliminar.vendidos*eliminar.precio]
         )
     }
-
-    const precio = (obj:string):number => {
-        const aux:InterProductos = elementos.filter(n => n.nombre === obj)[0]
-        return aux.precio
-    }
     
+    const ObtenerEleSelc = async (nombre:string) => {
+        const aux = await mostrarProductoNombre(nombre)
+        setEleSelc(aux)
+    }
+
+    const AgreProducto = async () =>{
+        if(cantidad <= 0 || eleSelc.nombre === "") return
+
+        const aux:InterProductos[] = AgregarProducto({prtsPorVender,cantidad,eleSelc,setPrtsPorVender})
+        setPrtsPorVender([...aux])
+        setTotal(n => [n[0]+cantidad , n[1]+cantidad*eleSelc.precio])
+        setCantidad(1)
+    }
+
     return (
         <div className="containt100 d-flex flex-column align-items-center">
             <div className="box-desple-ventas centrado flex-column">
                 <p>Productos</p>
-                <select name="select" value={eleSelc} onChange={(e) => {e.preventDefault(); setEleSelc(e.target.value)}}>
+                <select name="select" onChange={(e) => {e.preventDefault(); ObtenerEleSelc(e.target.value)}}>
                     {elementos.map((n , i) => 
                         <option key={n.id} value={n.nombre}>
                             {n.nombre}
@@ -97,50 +93,15 @@ export default function Ventas(){
                 />
             </div>
             <div className="box-agregar-ventas centrado">
-                <button type="button" onClick={e => {e.preventDefault(); AgregarProducto()}}>Agregar</button>
+                <button type="button" onClick={e => {e.preventDefault(); AgreProducto()}}>
+                    Agregar
+                </button>
             </div>
-            <div className="box-table-ventas">
-                <Table striped bordered hover>
-                    <thead>
-                        <tr className='table-dark'>
-                            <th>N°</th>
-                            <th>Producto</th>
-                            <th className="text-end">Cantidad</th>
-                            <th className="text-end">Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {prtsPorVender.map((n ,i ) => 
-                            <tr key={i} onClick={(e) => {e.preventDefault(); 
-                            
-                                Swal.fire({
-                                    title: 'Advertencia!',
-                                    text: 'Estas seguro de querer borrar Este Articulo?',
-                                    icon: 'warning',
-                                    showCloseButton: true,
-                                    showCancelButton: true,
-                                    confirmButtonText:'Borrar',
-                                    cancelButtonText:'Cancelar',
-                                }).then((result) => {
-                                    if(result.isConfirmed) BorrarProducto(i)
-                                })
-
-                            }}>
-                                <td>{i+1}</td>
-                                <td>{n.nombre}</td>
-                                <td className='text-end'>{n.cantidad}</td>
-                                <td className='text-end'>${n.cantidad * n.precio}</td>
-                            </tr>
-                        )}
-                        <tr className="table-success">
-                            <td>Total</td>
-                            <td></td>
-                            <td className='text-end'>{total[0]}</td>
-                            <td className='text-end'>${total[1]}</td>
-                        </tr>
-                    </tbody>
-                </Table>
-            </div>
+            <TablaVentas
+                total={total}
+                prtsPorVender={prtsPorVender}
+                BorrarProducto={BorrarProducto}
+            />
             <div className="box-bottones-ventas">
                 <button 
                     className="btn btn-success" 

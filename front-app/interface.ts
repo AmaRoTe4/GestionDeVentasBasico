@@ -5,12 +5,15 @@ export interface InterProductos{
     vendidos:number;
 }
 
-export interface InterProductosVendidos{
-    nombre:string;
-    precioPorUnidad:number;
-    cantidad:number;
+export interface ProductoVendido{
+    id:number,
+    vendidos:number;
 }
+
 export interface InterVentas{
-    id:number;
-    venta:InterProductosVendidos[]
+    id?:number
+    precio?:number
+    cantidad?:number
+    venta:string
+    productos?:ProductoVendido[] 
 }

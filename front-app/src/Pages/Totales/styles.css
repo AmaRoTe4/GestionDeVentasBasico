@@ -39,7 +39,7 @@
 }
 
 .box-table-totales{
-    height: 93vh;
+    height: 83.6vh;
     width: 100vw;
     overflow-y:auto;
     overflow-x:hidden;
@@ -68,7 +68,6 @@
 
 .table-total-ventas{
     margin-left:10px;
-    width:40%;
     height:100%;
     display: flex;
     align-items: center;
@@ -79,5 +78,5 @@
 }
 
 .individual{
-    height:81.5vh;
+    height:72.2vh;
 }

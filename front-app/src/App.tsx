@@ -8,23 +8,20 @@ import Ventas from './Pages/Ventas/index'
 import Ajustes from './Pages/Ajustes/index'
 import Productos from './Pages/Productos/index'
 import AccionesProductos from './Pages/Productos/acciones'
-
+import { BarraDeNavegacion } from "./components/BarraDeNavegacion";
 
 function App() {
 	return (
 		<BrowserRouter>
+			<BarraDeNavegacion />
 			<Routes>
 				<Route path="/" element={<Main />} />
-
 				<Route path="/Totales/" element={<Totales />} />
 				<Route path="/Totales/Ventas" element={<VentasTotales />} />
 				<Route path="/Totales/Ventas/:id" element={<VentasTotalesIndividual />} />
-
 				<Route path="/Productos/" element={<Productos />} />
 				<Route path="/Productos/acciones/:id" element={<AccionesProductos />} />
-
 				<Route path="/Ventas" element={<Ventas />} />
-
 				<Route path="/Ajustes" element={<Ajustes />} />
 			</Routes>
 		</BrowserRouter>

@@ -2,11 +2,8 @@ import { useEffect , useState } from "react";
 import { useLocation  , useNavigate} from "react-router-dom";
 import { InterProductos } from "../../../interface"
 import { Link } from "react-router-dom";
-import { crearProducto , editarProducto , eliminarProducto} from "../../functions/https/index"
+import { mostrarProductoId, crearProducto , editarProducto } from "../../functions/https/Productos/index"
 import './styles.css'
-import axios from 'axios'
-
-const pathProductos = 'http://localhost:7890/Productos/' 
 
 export default function AccionesProducto(){
     const navigate = useNavigate();
@@ -17,16 +14,14 @@ export default function AccionesProducto(){
 
     useEffect(() => {
         if(id === 0) return
-        //@ts-ignore
-        mostrarProducto(id)
+        obtenerData(id)
     },[])
 
-    const mostrarProducto = async(id:number):Promise<void> => {
-        const aux = await axios.get(pathProductos+id);
-        const data:InterProductos = aux.data[0]
-        setNombre(data.nombre)
-        setPrecio(data.precio)
-        setVendidos(data.vendidos)
+    const obtenerData = async (id:number) => {
+        const aux:InterProductos = await mostrarProductoId(id);
+        setNombre(aux.nombre)
+        setPrecio(aux.precio)
+        setVendidos(aux.vendidos)
     }
     
     const crear = () => {
