@@ -9,6 +9,7 @@ import Ajustes from './Pages/Ajustes/index'
 import Productos from './Pages/Productos/index'
 import AccionesProductos from './Pages/Productos/acciones'
 import { BarraDeNavegacion } from "./components/BarraDeNavegacion";
+import { ToastContainer} from 'react-toastify'
 
 function App() {
 	return (
@@ -24,6 +25,7 @@ function App() {
 				<Route path="/Ventas" element={<Ventas />} />
 				<Route path="/Ajustes" element={<Ajustes />} />
 			</Routes>
+			<ToastContainer />
 		</BrowserRouter>
 	)
 }

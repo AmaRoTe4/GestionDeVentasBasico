@@ -2,8 +2,8 @@ import './styles.css'
 import {useState,useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { InterProductos } from '../../../interface'
-import {eliminarProducto , mostrarTodosLosProductos } from '../../functions/https/Productos/index'
-import Swal from 'sweetalert2'
+import {mostrarTodosLosProductos } from '../../functions/https/Productos/index'
+import { funcionesDeProcutos } from '../../functions/data/Productos'
 
 export default function Productos(){
     const [element, setElement] = useState<InterProductos[]>([])
@@ -28,20 +28,7 @@ export default function Productos(){
                     <div
                         key={n.id} 
                         className="body-productos centrado flex-column col-md-2 col-5" 
-                        onClick={e => {e.preventDefault(); 
-                            Swal.fire({
-                                text: 'Seleciona la Accion a realizar',
-                                icon: 'warning',
-                                showCloseButton: true,
-                                showCancelButton: true,
-                                confirmButtonText:'Borrar',
-                                cancelButtonText:'Editar',
-                            }).then((result) => {
-                                if(result.isConfirmed) eliminarProducto(n.id)
-                                //@ts-ignore
-                                else if(result.dismiss === 'cancel') navigate(`Acciones/${n.id}`)
-                            })
-                        }}
+                        onClick={e => {e.preventDefault(); funcionesDeProcutos(n.id , navigate)}}
                     >
                         <p className="m-1 text-center">{n.nombre}</p>
                         <p className="m-1 text-center">${n.precio}</p>

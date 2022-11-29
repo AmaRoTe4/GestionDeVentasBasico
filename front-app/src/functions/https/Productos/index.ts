@@ -33,9 +33,9 @@ export const eliminarProducto = async(id:number):Promise<void> => {
 }
 
 
-export const mostrarProductoId = async(id:number):Promise<InterProductos> => {
+export const mostrarProductoId = async(id:number):Promise<InterProductos[]> => {
     const aux = await axios.get(pathProductos+id);
-    const data:InterProductos = aux.data[0]
+    const data:InterProductos[] = aux.data
     return data
 }
 
@@ -46,5 +46,12 @@ export const mostrarProductoNombre = async(id:string):Promise<InterProductos> =>
     const aux = await axios.get(pathProductos+newId);
     const data:InterProductos = aux.data[0]
     return data
+}
+
+export const comprobarNombre = async (nombre:string , id:number):Promise<boolean> => {
+    const productos:InterProductos[] = await mostrarTodosLosProductos()
+    const aux = productos.filter(n => n.id !== id)
+    const nombres:string[] = aux.map(n => n.nombre)
+    return !nombres.includes(nombre)
 }
 

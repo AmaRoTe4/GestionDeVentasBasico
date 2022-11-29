@@ -10,6 +10,10 @@ export const realizarVenta = async (venta:ProductoVendido[]):Promise<void> => {
     })
 }
 
+export const eliminarVenta = async (id:number):Promise<void> => {
+    await axios.delete(pathVentas+id)
+}
+
 export const todasVentas = async ():Promise<InterVentas[]> => {
     const aux = await axios.get(pathVentas)
     const retorno:InterVentas[] = aux.data;

@@ -1,14 +1,16 @@
 import { Table } from 'react-bootstrap'
 import Swal from "sweetalert2"
 import { InterProductos } from "../../../interface"
+import { BorrarProducto } from '../../functions/data/ventas'
 
 interface Props{
-    prtsPorVender:InterProductos[],
-    BorrarProducto:Function;    
+    prtsPorVender:InterProductos[],   
     total:number[]
+    setPrtsPorVender:React.Dispatch<React.SetStateAction<InterProductos[]>>,   
+    setTotal:React.Dispatch<React.SetStateAction<number[]>>
 }
 
-export default function TablaVentas({prtsPorVender , BorrarProducto , total}:Props){
+export default function TablaVentas({prtsPorVender , total , setPrtsPorVender , setTotal}:Props){
     return (
         <div className="box-table-ventas">
                 <Table striped bordered hover>
@@ -33,7 +35,7 @@ export default function TablaVentas({prtsPorVender , BorrarProducto , total}:Pro
                                     confirmButtonText:'Borrar',
                                     cancelButtonText:'Cancelar',
                                 }).then((result) => {
-                                    if(result.isConfirmed) BorrarProducto(i)
+                                    if(result.isConfirmed) BorrarProducto(i , prtsPorVender , setPrtsPorVender , setTotal)
                                 })
 
                             }}>

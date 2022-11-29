@@ -2,7 +2,7 @@ import { useEffect , useState } from "react";
 import { useLocation  , useNavigate} from "react-router-dom";
 import { InterProductos } from "../../../interface"
 import { Link } from "react-router-dom";
-import { mostrarProductoId, crearProducto , editarProducto } from "../../functions/https/Productos/index"
+import {comprobarNombre, mostrarProductoId, crearProducto , editarProducto } from "../../functions/https/Productos/index"
 import './styles.css'
 
 export default function AccionesProducto(){
@@ -11,17 +11,23 @@ export default function AccionesProducto(){
     const [nombre , setNombre] = useState<string>('')
     const [vendidos , setVendidos] = useState<number>(0)
     const [precio , setPrecio] = useState<number>(0)
+    const [estadoDelInput, setEstadoDelInput] = useState<boolean>(id === 0 ? false : true)
 
     useEffect(() => {
         if(id === 0) return
-        obtenerData(id)
+        if(nombre === "") obtenerData(id)
     },[])
 
+    const comprobarEstadoBtn = async(nombreTarget:string) => {
+        const aux = await comprobarNombre(nombreTarget , id)
+        setEstadoDelInput(aux)
+    }
+
     const obtenerData = async (id:number) => {
-        const aux:InterProductos = await mostrarProductoId(id);
-        setNombre(aux.nombre)
-        setPrecio(aux.precio)
-        setVendidos(aux.vendidos)
+        const aux:InterProductos[] = await mostrarProductoId(id);
+        setNombre(aux[0].nombre)
+        setPrecio(aux[0].precio)
+        setVendidos(aux[0].vendidos)
     }
     
     const crear = () => {
@@ -43,7 +49,7 @@ export default function AccionesProducto(){
                         type="text" 
                         id="Name" 
                         name="Name" 
-                        onChange={e => setNombre(e.target.value)} 
+                        onChange={e => {setNombre(e.target.value) ; comprobarEstadoBtn(e.target.value)}} 
                     />
                 </div>
                 <div className="centrado">
@@ -51,7 +57,8 @@ export default function AccionesProducto(){
                     <input 
                         style={{textAlign: "end"}}
                         value={precio} 
-                        type="number" 
+                        type="number"
+                        min={1} 
                         id="precio" 
                         name="precio" 
                         onChange={e => setPrecio(e.target.value !== "" ? parseInt(e.target.value) : 0)} 
@@ -60,6 +67,7 @@ export default function AccionesProducto(){
             </div>
             <div className="box-buttom-productos centrado flex-column">
                 <button 
+                    disabled={!(precio > 0 && estadoDelInput && nombre !== "")}
                     className="btn btnProductos" 
                     style={{backgroundColor:"rgb(100 100 255)"}}
                     onClick={e => {

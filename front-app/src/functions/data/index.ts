@@ -13,32 +13,9 @@ export const cantidadTotal = (array:ProductoVendido[]):number => {
 export const precioTotal = async (array:ProductoVendido[]):Promise<number> => {
     let aux = 0;
     for(let i = 0; i < array.length; i++) {
-        let precio:InterProductos = await mostrarProductoId(array[i].id)
-        aux += precio.precio*array[i].vendidos
+        let precio:InterProductos[] = await mostrarProductoId(array[i].id)
+        if(precio.length < 1) break;
+        aux += precio[0].precio*array[i].vendidos
     }
     return aux;
 } 
-
-export const valoresAbsolutosPorVenta = async (ventas:InterVentas[]):Promise<InterVentas[]> => {
-    let retorno:InterVentas[] = []
-
-    for(let i = 0 ; i < ventas.length; i++){
-        if(ventas[i].id === undefined || typeof(ventas[i].venta) !== "string") break
-
-        const venta:ProductoVendido[] = JSON.parse(ventas[i].venta)
-        const cantidad:number = cantidadTotal(venta)
-        const precio:number = await precioTotal(venta)
-
-        retorno.push(
-            {
-                id: ventas[i].id,
-                cantidad:cantidad,
-                precio:precio,
-                productos: venta,
-                venta:""
-            }
-        )
-    }
-
-    return retorno
-}

@@ -39,7 +39,7 @@
 }
 
 .box-table-totales{
-    height: 83.6vh;
+    height: 83.1vh;
     width: 100vw;
     overflow-y:auto;
     overflow-x:hidden;
@@ -78,5 +78,14 @@
 }
 
 .individual{
-    height:72.2vh;
+    height:71.8vh;
+}
+
+@media (max-width: 768px){
+    .box-table-totales{
+        height: 83.6vh;
+    }
+    .individual{
+        height:72.2vh;
+    }
 }
